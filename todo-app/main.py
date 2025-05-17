@@ -129,9 +129,6 @@ async def delete_todo(todo_id: str):
     del todos_db[todo_id]
     return
 
-@app.get("/error")
-async def raise_error(msg: str = Query(..., description="Error message to raise")):
-    raise Exception(msg)
 
 if __name__ == "__main__":
     import uvicorn
