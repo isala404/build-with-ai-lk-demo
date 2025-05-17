@@ -122,12 +122,19 @@ async def update_todo(todo_id: str, todo_update: TodoUpdate):
     todos_db[todo_id] = updated_todo
     return updated_todo
 
-@app.delete("/todos/{todo_id}", status_code=204)
+@app.delete("/todos/{todo_id}")
 async def delete_todo(todo_id: str):
     if todo_id not in todos_db:
         raise HTTPException(status_code=404, detail="Todo not found")
     del todos_db[todo_id]
-    return
+
+    remaining = list(todos_db.values())
+    completed_count = sum(1 for t in remaining if t.completed)
+    completion_rate = completed_count / len(remaining)
+    return {
+        "todos": remaining,
+        "completion_rate": completion_rate
+    }
 
 @app.get("/error")
 async def raise_error(msg: str = Query(..., description="Error message to raise")):

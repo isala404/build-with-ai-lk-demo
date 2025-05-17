@@ -10,7 +10,7 @@ load_dotenv()
 
 app = FastAPI()
 
-set_debug(1)
+set_debug(2)
 
 async def run_agent_logic(query: str):
     """Runs the agent with the given query."""
@@ -29,7 +29,7 @@ async def run_agent_logic(query: str):
     client = MCPClient.from_dict(config)
 
     # Create LLM
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-preview-04-17")
+    llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 
     # Create agent with the client
     agent = MCPAgent(llm=llm, client=client, max_steps=30, verbose=True)
@@ -69,13 +69,15 @@ async def run_agent_endpoint(request: Request, background_tasks: BackgroundTasks
 
         The application code is located in the 'todo-app' directory of the 'isala404/build-with-ai-lk-demo' GitHub repository.
 
-        Please do the following:
+        Please fix the above error by following the steps below:
         1. Review the error log.
         2. Determine the file that contains the error within the `todo-app` directory.
         3. Read the file and understand the code within the `todo-app` directory (get_file_contents).
         4. Create a new branch (create_branch)
         5. Implement the fix in the new branch (create_or_update_file)
         6. Open a Pull Request to the main branch (create_pull_request)
+
+        Do not stop till the PR was created and do not add unnecessary comments or code changes.
         """
 
         # Schedule the agent logic to run in the background
