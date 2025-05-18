@@ -22,6 +22,8 @@
         <ul id="todoList" class="space-y-2">
             <!-- Todo items will be injected here by JavaScript -->
         </ul>
+
+        <div id="completionRate" class="text-center my-4 text-gray-600"></div>
     </div>
 
     <script>
@@ -69,6 +71,12 @@
             });
         }
 
+        function updateCompletionRate(rate) {
+            const el = document.getElementById('completionRate');
+            const percent = (rate * 100).toFixed(2);
+            el.textContent = `Completion Rate: ${percent}%`;
+        }
+
         // Fetch all todos
         async function fetchTodos() {
             try {
@@ -78,6 +86,11 @@
                 }
                 const todos = await response.json();
                 renderTodos(todos);
+
+                const completedCount = todos.filter(t => t.completed).length;
+                const totalCount     = todos.length;
+                const rate           = totalCount > 0 ? completedCount/totalCount : 0;
+                updateCompletionRate(rate);
             } catch (error) {
                 console.error('Failed to fetch todos:', error);
                 todoList.innerHTML = '<li class="text-red-500 text-center">Failed to load todos.</li>';
@@ -136,10 +149,12 @@
                 const response = await fetch(`${API_BASE_URL}/${id}`, {
                     method: 'DELETE',
                 });
-                if (!response.ok && response.status !== 204) { // 204 No Content is a success for DELETE
+                if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                fetchTodos(); // Refresh list
+                const data = await response.json();
+                renderTodos(data.todos);
+                updateCompletionRate(data.completion_rate);
             } catch (error) {
                 console.error('Failed to delete todo:', error);
                 alert('Failed to delete todo.');
