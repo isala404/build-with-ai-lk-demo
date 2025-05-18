@@ -66,7 +66,10 @@ async def delete_todo(todo_id: str):
 
     remaining = list(todos_db.values())
     completed_count = sum(1 for t in remaining if t.completed)
-    completion_rate = completed_count / len(remaining)
+    if len(remaining) == 0:
+        completion_rate = 0
+    else:
+        completion_rate = completed_count / len(remaining)
     return {
         "todos": remaining,
         "completion_rate": completion_rate
