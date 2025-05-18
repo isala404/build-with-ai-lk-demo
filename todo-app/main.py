@@ -114,10 +114,10 @@ async def get_todo(todo_id: str):
 async def update_todo(todo_id: str, todo_update: TodoUpdate):
     if todo_id not in todos_db:
         raise HTTPException(status_code=404, detail="Todo not found")
-    
+
     stored_todo = todos_db[todo_id]
     update_data = todo_update.model_dump(exclude_unset=True)
-    
+
     updated_todo = stored_todo.model_copy(update=update_data)
     todos_db[todo_id] = updated_todo
     return updated_todo
@@ -127,6 +127,18 @@ async def delete_todo(todo_id: str):
     if todo_id not in todos_db:
         raise HTTPException(status_code=404, detail="Todo not found")
     del todos_db[todo_id]
+
+    remaining = [todo for todo in todos_db.values() if not todo.completed]
+    completed_count = sum(1 for todo in todos_db.values() if todo.completed)
+
+    # Add check for zero division
+    if len(remaining) == 0:
+        completion_rate = 0
+    else:
+        completion_rate = completed_count / len(remaining)
+
+    log.info("Todo deleted", todo_id=todo_id, completion_rate=completion_rate)
+
     return
 
 @app.get("/error")
@@ -136,4 +148,4 @@ async def raise_error(msg: str = Query(..., description="Error message to raise"
 if __name__ == "__main__":
     import uvicorn
     # Pass the LOGGING_CONFIG to Uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_config=LOGGING_CONFIG) 
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_config=LOGGING_CONFIG)
