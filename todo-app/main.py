@@ -64,7 +64,7 @@ LOGGING_CONFIG = {
             "level": "INFO",
             "propagate": False,
         },
-    },
+    ],
 }
 
 # 3. Get a structlog logger for this module
@@ -130,7 +130,7 @@ async def delete_todo(todo_id: str):
 
     remaining = list(todos_db.values())
     completed_count = sum(1 for t in remaining if t.completed)
-    completion_rate = completed_count / len(remaining)
+    completion_rate = completed_count / len(remaining) if len(remaining) > 0 else 0
     return {
         "todos": remaining,
         "completion_rate": completion_rate
